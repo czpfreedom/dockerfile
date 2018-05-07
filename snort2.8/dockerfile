@@ -1,0 +1,34 @@
+######################################
+# docker file to build snort2.8 container images
+# based on centos7
+######################################
+
+#SET THE BASE IMAGE
+#FROM insaneworks/centos
+FROM centos:centos7
+
+#FILE AUTHOR
+MAINTAINER czpfreedom
+
+######### BEGIN INSTALLATION ##########
+
+#INSTALL SOMETHING USEFUL
+RUN yum -y install epel-release wget vim gcc gcc-c++ libpcap* zlib tar ncurses* libtermcap* make tcpdump bison flex 
+
+#INSTALL PCRE
+RUN wget https://ftp.pcre.org/pub/pcre/pcre-8.00.tar.gz  -P /home
+RUN tar -zxvf /home/pcre-8.00.tar.gz  -C /home/
+RUN cd /home/pcre-8.00
+RUN /home/pcre-8.00/configure
+RUN make && make install
+#RUN make install -C /home/pcre-8.00/
+
+#INSTALL SNORT
+RUN wget -P /home https://www.snort.org/downloads/archive/snort/snort-2.8.6.1.tar.gz 
+RUN tar -zxvf /home/snort-2.8.6.1.tar.gz -C /home/
+
+RUN cd /home/snort-2.8.6.1
+RUN /home/snort-2.8.6.1/configure
+RUN make && make install
+
+#######################################
