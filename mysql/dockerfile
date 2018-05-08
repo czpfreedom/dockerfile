@@ -38,5 +38,5 @@ RUN mysql_install_db
 RUN chmod -R 777  /usr/local/mysql/var
 RUN adduser mysql
 RUN /etc/init.d/mysqld  start
-RUN mysqladmin  -u  root  password 123456
+# RUN mysqladmin  -u  root  password 123456
 
