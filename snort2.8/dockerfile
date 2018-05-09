@@ -16,19 +16,20 @@ MAINTAINER czpfreedom
 RUN yum -y install epel-release wget vim gcc gcc-c++ libpcap* zlib tar ncurses* libtermcap* make tcpdump bison flex 
 
 #INSTALL PCRE
-RUN wget https://ftp.pcre.org/pub/pcre/pcre-8.00.tar.gz  -P /home
-RUN tar -zxvf /home/pcre-8.00.tar.gz  -C /home/
-RUN cd /home/pcre-8.00
-RUN /home/pcre-8.00/configure
+WORKDIR /home
+RUN wget https://ftp.pcre.org/pub/pcre/pcre-8.00.tar.gz  
+RUN tar -zxvf /home/pcre-8.00.tar.gz  
+WORKDIR  ./pcre-8.00
+RUN ./configure
 RUN make && make install
 #RUN make install -C /home/pcre-8.00/
 
 #INSTALL SNORT
-RUN wget -P /home https://www.snort.org/downloads/archive/snort/snort-2.8.6.1.tar.gz 
-RUN tar -zxvf /home/snort-2.8.6.1.tar.gz -C /home/
-
-RUN cd /home/snort-2.8.6.1
-RUN /home/snort-2.8.6.1/configure
+WORKDIR /home
+RUN wget https://www.snort.org/downloads/archive/snort/snort-2.8.6.1.tar.gz 
+RUN tar -zxvf snort-2.8.6.1.tar.gz 
+WORKDIR ./snort-2.8.6.1
+RUN ./configure
 RUN make && make install
 
 #######################################
