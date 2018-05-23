@@ -1,0 +1,58 @@
+######################################
+# docker file to build snort3.0 container images
+# based on centos7
+######################################
+
+#SET THE BASE IMAGE
+FROM centos:centos7
+
+#FILE AUTHOR
+MAINTAINER czpfreedom
+
+######### BEGIN INSTALLATION ##########
+
+#INSTALL SOMETHING USEFUL
+RUN yum -y install wget vim gcc gcc-c++ epel-release libpcap* flex bison tcpdump make  git hwloc* 
+RUN yum -y install luajit* openssl*  cmake
+
+#INSTALL PCRE
+WORKDIR /home
+RUN wget https://ftp.pcre.org/pub/pcre/pcre-8.00.tar.gz 
+RUN tar -zxvf pcre-8.00.tar.gz
+WORKDIR ./pcre-8.00
+RUN ./configure
+RUN make && make install
+
+#INSTALL LIBDNET
+WORKDIR /home
+RUN git clone https://github.com/dugsong/libdnet.git
+WORKDIR ./libdnet
+RUN ./configure
+RUN make && make install
+
+#INSTALL DAQ
+WORKDIR /home
+RUN wget https://www.snort.org/downloads/snortplus/daq-2.2.2.tar.gz
+RUN tar -zxvf daq-2.2.2.tar.gz
+WORKDIR ./daq-2.2.2
+RUN ./configure
+RUN cp /home/libdnet/include/dnet/sctp.h  /usr/local/include/dnet
+RUN make && make install 
+
+#INSTALL SNORT
+WORKDIR /home
+RUN wget https://www.snort.org/downloads/snortplus/snort-3.0.0-243-cmake.tar.gz
+RUN tar -zxvf snort-3.0.0-243-cmake.tar.gz
+WORKDIR ./snort-3.0.0-
+RUN ./configure_cmake.sh
+WORKDIR ./build
+ENV LD_LIBRARY_PATH=/usr/local/lib
+RUN /sbin/ldconfig
+RUN make
+
+#INSTALL LAMP
+WORKDIR /home
+RUN git clone https://github.com/teddysun/lamp.git
+WORKDIR ./lamp
+RUN chmod +x *.sh
+
