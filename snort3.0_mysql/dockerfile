@@ -20,7 +20,7 @@ WORKDIR /home
 RUN wget http://www.namesdir.com/mirrors/ompi-www/software/hwloc/v1.11/downloads/hwloc-1.11.9.tar.gz
 RUN tar -zxvf hwloc-1.11.9.tar.gz
 WORKDIR ./hwloc-1.11.9
-RUN configure &&make  && make install
+RUN ./configure && make  && make install
 
 #INSTALL PCRE
 WORKDIR /home
@@ -46,13 +46,25 @@ RUN ./configure
 RUN cp /home/libdnet/include/dnet/sctp.h  /usr/local/include/dnet
 RUN make && make install 
 
+RUN yum -y install hwloc-devel.x86_64
+
 #INSTALL SNORT
 WORKDIR /home
 RUN wget https://www.snort.org/downloads/snortplus/snort-3.0.0-243-cmake.tar.gz
 RUN tar -zxvf snort-3.0.0-243-cmake.tar.gz
 WORKDIR ./snort-3.0.0-
+ENV LD_LIBRARY_PATH  /usr/local/lib:/usr/lib64/hwloc
 RUN ./configure_cmake.sh
 WORKDIR ./build
-ENV LD_LIBRARY_PATH=/usr/local/lib
 RUN /sbin/ldconfig
 RUN make
+
+#INSTALL BARNYARD2
+WORKDIR /home
+RUN wget https://github.com/firnsy/barnyard2/archive/v2-1.13.tar.gz -O barnyard2-2-1.13.tar.gz 
+RUN tar -zxvf barnyard2-2-1.13.tar.gz
+WORKDIR ./barnyard2-2-1.13
+RUN yum -y install libmysqlclient-dev autoconf libtool 
+RUN autoreconf -fvi -I ./m4 
+RUN ./configure --with-mysql --with-mysql-libraries=/usr/local/mysql/lib/mysql --with-mysql-includes=/usr/local/mysql/include/mysql 
+RUN make && make install

@@ -1,0 +1,7 @@
+step 1  /etc/rc.d/init.d/mysqld start
+step 2 mysql -u root -p < snort1.sql
+step 3 mysql -u root -p123456 <snort2.sql
+step 4 mkdir /var/log/snort
+step 5 mkdir /var/log/barnyard2
+step 6 snort -q -u root  -c snort.conf -i eth0 -D
+step 7 barnyard2 -c barnyard2.conf -d /var/log/snort -f snort.log  -u root
