@@ -1,0 +1,42 @@
+######################################
+# docker file to build mysql container images
+# based on centos7
+######################################
+
+#SET THE BASE IMAGE
+FROM centos:centos6
+
+#FILE AUTHOR
+MAINTAINER czpfreedom
+
+######### BEGIN INSTALLATION ##########
+
+#INSTALL SOMETHING USEFUL
+RUN yum -y install wget vim gcc gcc-c++ epel-release tar ncurses* libtermcap* make
+
+#INSTALL MYSQL
+WORKDIR /home
+RUN wget http://dev.mysql.com/get/Downloads/MySQL-5.1/mysql-5.1.73.tar.gz
+RUN tar -zxvf mysql-5.1.73.tar.gz
+WORKDIR ./mysql-5.1.73
+RUN ./configure --prefix=/usr/local/mysql
+RUN make && make install
+
+#CONFIG MYSQL
+RUN cp support-files/my-medium.cnf /etc/my.cnf 
+##  RUN ./scripts/mysql_install_db --user=root --datadir=/data/mysql/
+RUN cp support-files/mysql.server /etc/init.d/mysqld
+RUN chmod 755 /etc/init.d/mysqld
+RUN chkconfig --add mysqld
+## RUN chkconfig mysqld on
+ENV PATH  /usr/local/mysql/bin:$PATH
+WORKDIR /usr/local/mysql
+RUN mkdir var
+RUN echo  "/usr/local/mysql/lib/mysql" >> /etc/ld.so.conf
+RUN ldconfig
+RUN mysql_install_db
+RUN chmod -R 777  /usr/local/mysql/var
+RUN adduser mysql
+RUN /etc/init.d/mysqld  start
+# RUN mysqladmin  -u  root  password 123456
+
